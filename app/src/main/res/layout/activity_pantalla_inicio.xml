@@ -1,0 +1,70 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp" tools:context=".Pantalla_inicio"
+    android:background="@android:color/background_dark">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="6">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:text="CICLO  #1"
+                android:id="@+id/textView"
+                android:textSize="30sp"
+                android:gravity="center"
+                android:layout_weight="2"
+                android:textColor="#ffffffff" />
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:baselineAligned="false">
+
+            <GridView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/gridView"
+                android:numColumns="2"
+                android:clickable="false"
+                android:layout_weight="1"
+                android:verticalSpacing="40dp"/>
+
+            <GridView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:id="@+id/gridView2"
+                android:numColumns="1"
+                android:layout_weight="2"
+                android:clickable="false"
+                android:verticalSpacing="40dp" />
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="6">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Pasar al siguiente ciclo"
+                android:id="@+id/button"
+                android:onClick="new_cycle" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

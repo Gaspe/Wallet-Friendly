@@ -1,0 +1,21 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" tools:context=".Pantalla_inicio">
+    <item
+        android:id="@+id/menu_new"
+        app:showAsAction="ifRoom"
+        android:icon="@android:drawable/ic_menu_add"
+        android:title="menu_nuevo"/>
+    <item
+        android:id="@+id/Config_rub"
+        android:title="Configuracion Rubros"
+        android:orderInCategory="100" app:showAsAction="never" />
+    <item
+        android:id="@+id/Config_cic"
+        android:title="Configuracion Ciclos"
+        android:orderInCategory="100" app:showAsAction="never" />
+    <item
+        android:id="@+id/Gen_rep"
+        android:title="Generacion Reportes"
+        android:orderInCategory="100" app:showAsAction="never" />
+</menu>
