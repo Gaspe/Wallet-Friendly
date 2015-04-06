@@ -42,6 +42,22 @@ public class ConfigRubros extends ActionBarActivity {
         }
         db_prev.close();
         /////////////////////////////////
+        /////////////////////////////////
+        SQLiteDatabase cambio=Manejador.getReadableDatabase();
+        Cursor data1=cambio.rawQuery("Select * from Rubros where Ciclo="+String.valueOf(ciclo+1),null);
+        if (!data1.moveToFirst()) {
+            Cursor data=cambio.rawQuery("Select * from Rubros where Ciclo="+String.valueOf(ciclo),null);
+            if (data.moveToFirst()) {
+                SQLiteDatabase cambio1 = Manejador.getWritableDatabase();
+                do {
+                    cambio1.execSQL("Insert into Rubros (ID_pc, NOMBRE, ValorEsperado,ValorActual, Ciclo,TIPO) Values(" + data.getString(1) + ",'" + data.getString(2) + "'," + data.getString(3) + ",0," + String.valueOf(ciclo + 1) + "," + data.getString(6) + ")");
+                } while (data.moveToNext());
+                cambio1.close();
+            }
+            cambio.close();
+        }
+
+        ////////////////////////////////
         GridView gridView=(GridView) findViewById(R.id.gridView);
         final GridView gridView2=(GridView) findViewById(R.id.gridView3);
         ArrayList list=new ArrayList<String>();
@@ -80,12 +96,12 @@ public class ConfigRubros extends ActionBarActivity {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         SQLiteDatabase DBWF = Manejador.getWritableDatabase();
                         int u = position + 1;
-                        DBWF.execSQL("UPDATE Rubros SET ValorEsperado="+Integer.parseInt(input.getText().toString())+" WHERE ID=" + u + " ");
+                        DBWF.execSQL("UPDATE Rubros SET ValorEsperado="+Integer.parseInt(input.getText().toString())+" WHERE ID_pc=" + u + " AND Ciclo="+String.valueOf(ciclo+1));
                         DBWF.close();
                         ArrayList list1 = new ArrayList<String>();
                         final ArrayAdapter adapter1 = new ArrayAdapter<String>(getApplicationContext(), R.layout.mitextview, list1);
                         SQLiteDatabase db = Manejador.getReadableDatabase();
-                        Cursor c = db.rawQuery("SELECT ValorEsperado FROM Rubros", null);
+                        Cursor c = db.rawQuery("SELECT ValorEsperado FROM Rubros where Ciclo="+String.valueOf(ciclo), null);
                         if (c.moveToFirst()) {
                             do {
                                 list1.add(c.getString(0));

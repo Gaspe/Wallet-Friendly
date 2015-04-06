@@ -23,6 +23,7 @@ import java.util.ArrayList;
 public class Pantalla_inicio extends ActionBarActivity {
     BD_WALLET_FRIENDLY Manejador=new BD_WALLET_FRIENDLY(this, "WalletFriendly_DB", null, 1);;
     private int ciclo;
+    private int ID_pc;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,11 +34,16 @@ public class Pantalla_inicio extends ActionBarActivity {
         if(!p.moveToFirst())
         {   sw=true;
             ciclo=1;
+            ID_pc=0;
         }
         else{
             Cursor p1=db_prev.rawQuery("SELECT MAX(ID_ciclo) from Ciclo",null);
             p1.moveToFirst();
             ciclo=p1.getInt(0);
+            Cursor p2=db_prev.rawQuery("SELECT MAX(ID_pc) from Rubros where Ciclo="+String.valueOf(ciclo),null);
+            p2.moveToFirst();
+            ID_pc=p2.getInt(0);
+            Toast.makeText(getApplicationContext(),String.valueOf(ID_pc),Toast.LENGTH_SHORT).show();
         }
         db_prev.close();
         TextView prim=(TextView) findViewById(R.id.textView);
@@ -88,7 +94,7 @@ public class Pantalla_inicio extends ActionBarActivity {
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 final String vis=parent.getItemAtPosition(position).toString();
                 AlertDialog.Builder alert1 = new AlertDialog.Builder(Pantalla_inicio.this);
-                alert1.setMessage("¿Cuanto gastó en este rubro?");
+                alert1.setMessage("¿Cuanto agregará en este rubro?");
                 final EditText input = new EditText(Pantalla_inicio.this);
                 input.setInputType(InputType.TYPE_CLASS_NUMBER);
                 alert1.setView(input);
@@ -97,12 +103,12 @@ public class Pantalla_inicio extends ActionBarActivity {
                         int suma=Integer.parseInt(vis)+Integer.parseInt(input.getText().toString());
                         SQLiteDatabase DBWF= Manejador.getWritableDatabase();
                         int u=position+1;
-                        DBWF.execSQL("UPDATE Rubros SET ValorActual="+suma+" WHERE ID="+u+" ");
+                        DBWF.execSQL("UPDATE Rubros SET ValorActual="+suma+" WHERE ID_pc=" + u + " AND Ciclo="+String.valueOf(ciclo));
                         DBWF.close();
                         ArrayList list1=new ArrayList<String>();
                         final ArrayAdapter adapter1=new ArrayAdapter<String>(getApplicationContext(),R.layout.mitextview,list1);
                         SQLiteDatabase db=Manejador.getReadableDatabase();
-                        Cursor c=db.rawQuery("SELECT ValorActual FROM Rubros", null);
+                        Cursor c=db.rawQuery("SELECT ValorActual FROM Rubros Where Ciclo="+String.valueOf(ciclo), null);
                         if(c.moveToFirst()) {
                             do {
                                 list1.add(c.getString(0));
@@ -123,6 +129,7 @@ public class Pantalla_inicio extends ActionBarActivity {
         });
     }
     public void new_cycle(View v){
+        ID_pc=0;
         SQLiteDatabase db=Manejador.getWritableDatabase();
         db.execSQL("Insert Into Ciclo (tolerancia) Values (" + String.valueOf(ciclo + 1) + ")");
         db.close();
@@ -164,6 +171,7 @@ public class Pantalla_inicio extends ActionBarActivity {
                 }
             });
         }
+        db1.close();
         //Intent nuevo=new Intent(this,Pantalla_inicio.class);
         //startActivity(nuevo);
     }
@@ -190,9 +198,8 @@ public class Pantalla_inicio extends ActionBarActivity {
             return true;
         }
         if(id == R.id.menu_new) {
-            final String rubro[] = new String[5];
+            final String rubro[] = new String[6];
             final String prim_grid[]= new String[2];
-            rubro[2]="0";rubro[3]=String.valueOf(ciclo);
                 AlertDialog.Builder alert = new AlertDialog.Builder(Pantalla_inicio.this);
                 alert.setTitle("Rubro");
                 alert.setMessage("Ingrese el nombre del rubro");
@@ -200,22 +207,24 @@ public class Pantalla_inicio extends ActionBarActivity {
                 alert.setView(input);
                 AlertDialog.Builder ok = alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        rubro[0] = input.getText().toString();
+                        rubro[1] = input.getText().toString();
                         prim_grid[0]=rubro[0];
                     }
                 });
                     AlertDialog.Builder alert1 = new AlertDialog.Builder(Pantalla_inicio.this);
-                    alert1.setTitle("Rubro");
+                    alert1.setTitle("Nuevo Rubro");
                     alert1.setMessage("Ingrese el valor esperado del rubro");
                     final EditText input1 = new EditText(Pantalla_inicio.this);
                     input1.setInputType(InputType.TYPE_CLASS_NUMBER);
                     alert1.setView(input1);
                     AlertDialog.Builder ok1 = alert1.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        rubro[1] = input1.getText().toString();
-                        prim_grid[1]=rubro[1];
+                        ID_pc++;
+                        rubro[3]="0";rubro[4]=String.valueOf(ciclo);rubro[0]=String.valueOf(ID_pc);
+                        rubro[2] = input1.getText().toString();
+                        prim_grid[1]=rubro[2];
                         SQLiteDatabase DBWF= Manejador.getWritableDatabase();
-                        DBWF.execSQL("INSERT INTO Rubros (NOMBRE,ValorEsperado,ValorActual, Ciclo, Tipo) VALUES (?,?,?,?,?) ",rubro);
+                        DBWF.execSQL("INSERT INTO Rubros (ID_pc,NOMBRE,ValorEsperado,ValorActual, Ciclo, Tipo) VALUES (?,?,?,?,?,?) ",rubro);
                         DBWF.close();
                         GridView gridView=(GridView) findViewById(R.id.gridView);
                         GridView gridView2=(GridView) findViewById(R.id.gridView2);
@@ -240,6 +249,7 @@ public class Pantalla_inicio extends ActionBarActivity {
                                 }
                             });
                         }
+                        db.close();
                     }
                 });
                 final String[] items = {"Entrada", "Salida"};
@@ -248,9 +258,9 @@ public class Pantalla_inicio extends ActionBarActivity {
                 AlertDialog.Builder esc = builder.setItems(items, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int item) {
                         if (item==0) {
-                            rubro[4] = "0";
+                            rubro[5] = "0";
                         } else {
-                            rubro[4] = "1";
+                            rubro[5] = "1";
                         }
                     }
                 });

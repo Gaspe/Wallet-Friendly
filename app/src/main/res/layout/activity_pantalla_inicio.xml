@@ -63,7 +63,9 @@
                 android:layout_height="wrap_content"
                 android:text="Pasar al siguiente ciclo"
                 android:id="@+id/button"
-                android:onClick="new_cycle" />
+                android:onClick="new_cycle"
+                android:layout_weight="2" />
+
         </LinearLayout>
 
     </LinearLayout>
