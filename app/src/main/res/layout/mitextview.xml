@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:id="@android:id/text1"
     android:singleLine="true"
-    android:textAlignment="inherit"
+    android:textAlignment="center"
     android:textColor="@android:color/darker_gray"
     android:textSize="25sp"
-    />
+    android:gravity="center_vertical|center_horizontal" />

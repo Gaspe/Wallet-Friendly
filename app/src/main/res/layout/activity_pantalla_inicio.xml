@@ -3,7 +3,8 @@
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="16dp"
-    android:paddingBottom="16dp" tools:context=".Pantalla_inicio">
+    android:paddingBottom="16dp" tools:context=".Pantalla_inicio"
+    android:background="@android:color/background_dark">
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"

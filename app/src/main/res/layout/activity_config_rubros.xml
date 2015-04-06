@@ -3,7 +3,8 @@
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="16dp"
-    android:paddingBottom="16dp" tools:context=".Pantalla_inicio">
+    android:paddingBottom="16dp" tools:context=".Pantalla_inicio"
+    android:background="@android:color/background_dark">
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
@@ -29,7 +30,7 @@
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:baselineAligned="false">
 
             <GridView
@@ -51,26 +52,31 @@
                 android:verticalSpacing="40dp" />
 
         </LinearLayout>
+
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="6">
 
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Editar Rubro"
-                android:id="@+id/button"
-                android:onClick="new_cycle"
-                android:layout_weight="1" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:text="TOLERANCIA "
+                android:id="@+id/textView8"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:layout_weight="2"
+                android:textColor="@android:color/darker_gray" />
 
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Editar Tolerancia"
-                android:id="@+id/button2"
-                android:layout_weight="1" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:id="@+id/textView9"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:layout_weight="2"
+                android:textColor="@android:color/darker_gray" />
         </LinearLayout>
 
     </LinearLayout>

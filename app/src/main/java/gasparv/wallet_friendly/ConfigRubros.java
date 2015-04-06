@@ -14,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -21,10 +22,26 @@ import java.util.ArrayList;
 
 public class ConfigRubros extends ActionBarActivity {
     BD_WALLET_FRIENDLY Manejador=new BD_WALLET_FRIENDLY(this, "WalletFriendly_DB", null, 1);
+    private int ciclo;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_config_rubros);
+        /////////////////////////////7
+        SQLiteDatabase db_prev=Manejador.getReadableDatabase();
+        Cursor p=db_prev.rawQuery("SELECT * FROM Ciclo",null);
+        boolean sw=false;
+        if(!p.moveToFirst())
+        {   sw=true;
+            ciclo=1;
+        }
+        else{
+            Cursor p1=db_prev.rawQuery("SELECT MAX(ID_ciclo) from Ciclo",null);
+            p1.moveToFirst();
+            ciclo=p1.getInt(0);
+        }
+        db_prev.close();
+        /////////////////////////////////
         GridView gridView=(GridView) findViewById(R.id.gridView);
         final GridView gridView2=(GridView) findViewById(R.id.gridView3);
         ArrayList list=new ArrayList<String>();
@@ -32,7 +49,7 @@ public class ConfigRubros extends ActionBarActivity {
         final ArrayAdapter adapter=new ArrayAdapter<String>(getApplicationContext(),R.layout.mitextview,list);
         final ArrayAdapter adapter1=new ArrayAdapter<String>(getApplicationContext(),R.layout.mitextview,list1);
         SQLiteDatabase db=Manejador.getReadableDatabase();
-        Cursor c=db.rawQuery("SELECT NOMBRE,TIPO,ValorEsperado FROM Rubros", null);
+        Cursor c=db.rawQuery("SELECT NOMBRE,TIPO,ValorEsperado FROM Rubros WHERE Ciclo="+String.valueOf(ciclo), null);
         if(c.moveToFirst()) {
             do {
                 list.add(c.getString(0));
@@ -55,7 +72,7 @@ public class ConfigRubros extends ActionBarActivity {
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 final String vis = parent.getItemAtPosition(position).toString();
                 AlertDialog.Builder alert1 = new AlertDialog.Builder(ConfigRubros.this);
-                alert1.setMessage("¿Cuanto gastó en este rubro?");
+                alert1.setMessage("Ingrese el nuevo valor esperado. (Recuerde: ¡Este valor solo se hará visible en el siguiente ciclo!)");
                 final EditText input = new EditText(ConfigRubros.this);
                 input.setInputType(InputType.TYPE_CLASS_NUMBER);
                 alert1.setView(input);
@@ -87,6 +104,11 @@ public class ConfigRubros extends ActionBarActivity {
                 alert1.show();
             }
         });
+        TextView tol=(TextView) findViewById(R.id.textView9);
+        SQLiteDatabase dt=Manejador.getReadableDatabase();
+        Cursor cur =dt.rawQuery("Select tolerancia from Ciclo where ID_ciclo="+String.valueOf(ciclo)+"",null);
+        cur.moveToFirst();
+        tol.setText(String.valueOf(cur.getInt(0)+"%"));
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

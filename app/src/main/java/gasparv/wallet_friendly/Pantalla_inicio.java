@@ -16,8 +16,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.TextView;
 import android.widget.Toast;
-
 import java.util.ArrayList;
 
 public class Pantalla_inicio extends ActionBarActivity {
@@ -29,22 +29,22 @@ public class Pantalla_inicio extends ActionBarActivity {
         setContentView(R.layout.activity_pantalla_inicio);
         SQLiteDatabase db_prev=Manejador.getReadableDatabase();
         Cursor p=db_prev.rawQuery("SELECT * FROM Ciclo",null);
-
         boolean sw=false;
         if(!p.moveToFirst())
         {   sw=true;
-            ciclo=p.getInt(0);
+            ciclo=1;
         }
         else{
             Cursor p1=db_prev.rawQuery("SELECT MAX(ID_ciclo) from Ciclo",null);
             p1.moveToFirst();
             ciclo=p1.getInt(0);
         }
-        Toast.makeText(getApplicationContext(),String.valueOf(ciclo),Toast.LENGTH_SHORT).show();
         db_prev.close();
+        TextView prim=(TextView) findViewById(R.id.textView);
+        prim.setText("Ciclo #"+String.valueOf(ciclo));
         if(sw){
             AlertDialog.Builder alert1 = new AlertDialog.Builder(Pantalla_inicio.this);
-            alert1.setTitle("Bienvenido a Wallet-Firendly");
+            alert1.setTitle("Bienvenido a Wallet-Friendly");
             alert1.setMessage("" +
                     "Ingrese la tolerancia del primer ciclo");
             final EditText input1 = new EditText(Pantalla_inicio.this);
@@ -67,7 +67,7 @@ public class Pantalla_inicio extends ActionBarActivity {
         final ArrayAdapter adapter=new ArrayAdapter<String>(getApplicationContext(),R.layout.mitextview,list);
         final ArrayAdapter adapter1=new ArrayAdapter<String>(getApplicationContext(),R.layout.mitextview,list1);
         SQLiteDatabase db=Manejador.getReadableDatabase();
-        Cursor c=db.rawQuery("SELECT NOMBRE,ValorEsperado,ValorActual FROM Rubros", null);
+        Cursor c=db.rawQuery("SELECT NOMBRE,ValorEsperado,ValorActual FROM Rubros where Ciclo="+String.valueOf(ciclo), null);
         if(c.moveToFirst()) {
             do {
                 list.add(c.getString(0));
@@ -123,7 +123,49 @@ public class Pantalla_inicio extends ActionBarActivity {
         });
     }
     public void new_cycle(View v){
-        ciclo=ciclo+1;
+        SQLiteDatabase db=Manejador.getWritableDatabase();
+        db.execSQL("Insert Into Ciclo (tolerancia) Values (" + String.valueOf(ciclo + 1) + ")");
+        db.close();
+        SQLiteDatabase db_prev=Manejador.getReadableDatabase();
+        Cursor p=db_prev.rawQuery("SELECT * FROM Ciclo",null);
+        boolean sw=false;
+        if(!p.moveToFirst())
+        {   sw=true;
+            ciclo=1;
+        }
+        else{
+            Cursor p1=db_prev.rawQuery("SELECT MAX(ID_ciclo) from Ciclo",null);
+            p1.moveToFirst();
+            ciclo=p1.getInt(0);
+        }
+        db_prev.close();
+        TextView prim=(TextView) findViewById(R.id.textView);
+        prim.setText("Ciclo #"+String.valueOf(ciclo));
+        GridView v1=(GridView) findViewById(R.id.gridView);
+        GridView v2=(GridView) findViewById(R.id.gridView2);
+        ArrayList list=new ArrayList<String>();
+        ArrayList list1=new ArrayList<String>();
+        final ArrayAdapter adapter=new ArrayAdapter<String>(getApplicationContext(),R.layout.mitextview,list);
+        final ArrayAdapter adapter1=new ArrayAdapter<String>(getApplicationContext(),R.layout.mitextview,list1);
+        SQLiteDatabase db1=Manejador.getReadableDatabase();
+        Cursor c1=db1.rawQuery("SELECT NOMBRE,ValorEsperado,ValorActual FROM Rubros where Ciclo="+String.valueOf(ciclo), null);
+        if(c1.moveToFirst()) {
+            do {
+                list.add(c1.getString(0));
+                list.add(c1.getString(1));
+                list1.add(c1.getString(2));
+            } while (c1.moveToNext());
+            v1.setAdapter(adapter);
+            v2.setAdapter(adapter1);
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    adapter.notifyDataSetChanged();
+                    adapter1.notifyDataSetChanged();
+                }
+            });
+        }
+        //Intent nuevo=new Intent(this,Pantalla_inicio.class);
+        //startActivity(nuevo);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -182,7 +224,7 @@ public class Pantalla_inicio extends ActionBarActivity {
                         final ArrayAdapter adapter=new ArrayAdapter<String>(getApplicationContext(),R.layout.mitextview,list);
                         final ArrayAdapter adapter1=new ArrayAdapter<String>(getApplicationContext(),R.layout.mitextview,list1);
                         SQLiteDatabase db=Manejador.getReadableDatabase();
-                        Cursor c=db.rawQuery("SELECT NOMBRE,ValorEsperado,ValorActual FROM Rubros", null);
+                        Cursor c=db.rawQuery("SELECT NOMBRE,ValorEsperado,ValorActual FROM Rubros WHERE Ciclo="+String.valueOf(ciclo), null);
                         if(c.moveToFirst()) {
                             do {
                                 list.add(c.getString(0));
