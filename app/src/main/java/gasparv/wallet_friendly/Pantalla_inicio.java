@@ -140,9 +140,22 @@ public class Pantalla_inicio extends ActionBarActivity {
                 AlertDialog.Builder ok1 = alert1
                 .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
-                SQLiteDatabase prueba=Manejador.getWritableDatabase();
-                prueba.execSQL("Insert into Ciclo (tolerancia) Values("+ input1.getText().toString()+")");
-                prueba.close();
+                    SQLiteDatabase cambio=Manejador.getReadableDatabase();
+                    Cursor data1=cambio.rawQuery("Select * from Rubros where Ciclo="+String.valueOf(ciclo+1),null);
+                    if (!data1.moveToFirst()) {
+                        Cursor data=cambio.rawQuery("Select * from Rubros where Ciclo="+String.valueOf(ciclo),null);
+                        if (data.moveToFirst()) {
+                            SQLiteDatabase cambio1 = Manejador.getWritableDatabase();
+                            do {
+                                cambio1.execSQL("Insert into Rubros (ID_pc, NOMBRE, ValorEsperado,ValorActual, Ciclo,TIPO) Values(" + data.getString(1) + ",'" + data.getString(2) + "'," + data.getString(3) + ",0," + String.valueOf(ciclo + 1) + "," + data.getString(6) + ")");
+                            } while (data.moveToNext());
+                            cambio1.close();
+                        }
+                        cambio.close();
+                    }
+                    SQLiteDatabase prueba=Manejador.getWritableDatabase();
+                    prueba.execSQL("Insert into Ciclo (tolerancia) Values("+ input1.getText().toString()+")");
+                    prueba.close();
                     SQLiteDatabase db_prev=Manejador.getReadableDatabase();
                     Cursor p=db_prev.rawQuery("SELECT * FROM Ciclo",null);
                     boolean sw=false;
