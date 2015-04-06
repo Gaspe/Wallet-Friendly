@@ -132,59 +132,65 @@ public class Pantalla_inicio extends ActionBarActivity {
         SQLiteDatabase db=Manejador.getWritableDatabase();
         AlertDialog.Builder alert1 = new AlertDialog.Builder(Pantalla_inicio.this);
         alert1.setMessage("" +
-                "Ingrese la tolerancia del siguiente ciclo");
+                "Esta a punto de cambiar de ciclo. Si desea cambiar aspectos de los rubros, presione Cancelar y vaya a ConfigRubros. " +
+                "Sino, ingrese la tolerancia del siguiente ciclo (%) y presione Ok");
                 final EditText input1 = new EditText(Pantalla_inicio.this);
                 input1.setInputType(InputType.TYPE_CLASS_NUMBER);
                 alert1.setView(input1);
-                AlertDialog.Builder ok1 = alert1.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        SQLiteDatabase prueba=Manejador.getWritableDatabase();
-                        prueba.execSQL("Insert into Ciclo (tolerancia) Values("+ input1.getText().toString()+")");
-                        prueba.close();
+                AlertDialog.Builder ok1 = alert1
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                SQLiteDatabase prueba=Manejador.getWritableDatabase();
+                prueba.execSQL("Insert into Ciclo (tolerancia) Values("+ input1.getText().toString()+")");
+                prueba.close();
+                    SQLiteDatabase db_prev=Manejador.getReadableDatabase();
+                    Cursor p=db_prev.rawQuery("SELECT * FROM Ciclo",null);
+                    boolean sw=false;
+                    if(!p.moveToFirst())
+                    {
+                        ciclo=1;
                     }
-                });
-        alert1.show();
-        db.execSQL("Insert Into Ciclo (tolerancia) Values (" + String.valueOf(ciclo + 1) + ")");
-        db.close();
-        SQLiteDatabase db_prev=Manejador.getReadableDatabase();
-        Cursor p=db_prev.rawQuery("SELECT * FROM Ciclo",null);
-        boolean sw=false;
-        if(!p.moveToFirst())
-        {
-            ciclo=1;
-        }
-        else{
-            Cursor p1=db_prev.rawQuery("SELECT MAX(ID_ciclo) from Ciclo",null);
-            p1.moveToFirst();
-            ciclo=p1.getInt(0);
-        }
-        db_prev.close();
-        TextView prim=(TextView) findViewById(R.id.textView);
-        prim.setText("Ciclo #"+String.valueOf(ciclo));
-        GridView v1=(GridView) findViewById(R.id.gridView);
-        GridView v2=(GridView) findViewById(R.id.gridView2);
-        ArrayList list=new ArrayList<String>();
-        ArrayList list1=new ArrayList<String>();
-        final ArrayAdapter adapter=new ArrayAdapter<String>(getApplicationContext(),R.layout.mitextview,list);
-        final ArrayAdapter adapter1=new ArrayAdapter<String>(getApplicationContext(),R.layout.mitextview,list1);
-        SQLiteDatabase db1=Manejador.getReadableDatabase();
-        Cursor c1=db1.rawQuery("SELECT NOMBRE,ValorEsperado,ValorActual FROM Rubros where Ciclo="+String.valueOf(ciclo), null);
-        if(c1.moveToFirst()) {
-            do {
-                list.add(c1.getString(0));
-                list.add(c1.getString(1));
-                list1.add(c1.getString(2));
-            } while (c1.moveToNext());
-            v1.setAdapter(adapter);
-            v2.setAdapter(adapter1);
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    adapter.notifyDataSetChanged();
-                    adapter1.notifyDataSetChanged();
+                    else{
+                        Cursor p1=db_prev.rawQuery("SELECT MAX(ID_ciclo) from Ciclo",null);
+                        p1.moveToFirst();
+                        ciclo=p1.getInt(0);
+                    }
+                    db_prev.close();
+                    TextView prim=(TextView) findViewById(R.id.textView);
+                    prim.setText("Ciclo #"+String.valueOf(ciclo));
+                    GridView v1=(GridView) findViewById(R.id.gridView);
+                    GridView v2=(GridView) findViewById(R.id.gridView2);
+                    ArrayList list=new ArrayList<String>();
+                    ArrayList list1=new ArrayList<String>();
+                    final ArrayAdapter adapter=new ArrayAdapter<String>(getApplicationContext(),R.layout.mitextview,list);
+                    final ArrayAdapter adapter1=new ArrayAdapter<String>(getApplicationContext(),R.layout.mitextview,list1);
+                    SQLiteDatabase db1=Manejador.getReadableDatabase();
+                    Cursor c1=db1.rawQuery("SELECT NOMBRE,ValorEsperado,ValorActual FROM Rubros where Ciclo="+String.valueOf(ciclo), null);
+                    if(c1.moveToFirst()) {
+                        do {
+                            list.add(c1.getString(0));
+                            list.add(c1.getString(1));
+                            list1.add(c1.getString(2));
+                        } while (c1.moveToNext());
+                        v1.setAdapter(adapter);
+                        v2.setAdapter(adapter1);
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+                                adapter.notifyDataSetChanged();
+                                adapter1.notifyDataSetChanged();
+                            }
+                        });
+                    }
+                    db1.close();
                 }
-            });
-        }
-        db1.close();
+                })
+                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                 public void onClick(DialogInterface dialog, int id) {
+
+                }
+                });
+                    alert1.show();
+
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
