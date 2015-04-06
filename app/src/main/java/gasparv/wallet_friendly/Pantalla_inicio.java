@@ -65,7 +65,6 @@ public class Pantalla_inicio extends ActionBarActivity {
             });
             alert1.show();
         }
-
         GridView v1=(GridView) findViewById(R.id.gridView);
         final GridView v=(GridView) findViewById(R.id.gridView2);
         ArrayList list=new ArrayList<String>();
@@ -131,13 +130,27 @@ public class Pantalla_inicio extends ActionBarActivity {
     public void new_cycle(View v){
         ID_pc=0;
         SQLiteDatabase db=Manejador.getWritableDatabase();
+        AlertDialog.Builder alert1 = new AlertDialog.Builder(Pantalla_inicio.this);
+        alert1.setMessage("" +
+                "Ingrese la tolerancia del siguiente ciclo");
+                final EditText input1 = new EditText(Pantalla_inicio.this);
+                input1.setInputType(InputType.TYPE_CLASS_NUMBER);
+                alert1.setView(input1);
+                AlertDialog.Builder ok1 = alert1.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        SQLiteDatabase prueba=Manejador.getWritableDatabase();
+                        prueba.execSQL("Insert into Ciclo (tolerancia) Values("+ input1.getText().toString()+")");
+                        prueba.close();
+                    }
+                });
+        alert1.show();
         db.execSQL("Insert Into Ciclo (tolerancia) Values (" + String.valueOf(ciclo + 1) + ")");
         db.close();
         SQLiteDatabase db_prev=Manejador.getReadableDatabase();
         Cursor p=db_prev.rawQuery("SELECT * FROM Ciclo",null);
         boolean sw=false;
         if(!p.moveToFirst())
-        {   sw=true;
+        {
             ciclo=1;
         }
         else{
@@ -172,8 +185,6 @@ public class Pantalla_inicio extends ActionBarActivity {
             });
         }
         db1.close();
-        //Intent nuevo=new Intent(this,Pantalla_inicio.class);
-        //startActivity(nuevo);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -224,6 +235,12 @@ public class Pantalla_inicio extends ActionBarActivity {
                         rubro[2] = input1.getText().toString();
                         prim_grid[1]=rubro[2];
                         SQLiteDatabase DBWF= Manejador.getWritableDatabase();
+                        int i=1;
+                        while(i<ciclo)
+                        {
+                            DBWF.execSQL("INSERT INTO Rubros (ID_pc,NOMBRE,ValorEsperado,ValorActual, Ciclo, Tipo) VALUES ("+rubro[0]+",'"+rubro[1]+"',0,0,"+String.valueOf(i)+","+rubro[5]+") ");
+                            i++;
+                        }
                         DBWF.execSQL("INSERT INTO Rubros (ID_pc,NOMBRE,ValorEsperado,ValorActual, Ciclo, Tipo) VALUES (?,?,?,?,?,?) ",rubro);
                         DBWF.close();
                         GridView gridView=(GridView) findViewById(R.id.gridView);
