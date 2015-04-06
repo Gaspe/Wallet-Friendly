@@ -20,6 +20,10 @@
             android:name=".Reporte"
             android:label="@string/title_activity_reporte" >
         </activity>
+        <activity
+            android:name=".ConfigRubros"
+            android:label="@string/title_activity_config_rubros" >
+        </activity>
     </application>
 
 </manifest>
